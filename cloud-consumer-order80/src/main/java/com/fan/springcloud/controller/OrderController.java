@@ -25,10 +25,9 @@ public class OrderController {
     public static final String PAYMENT_URL = "http://CLOUD-PAYMENT-SERVICE";
     /**
      * 自定义负载均衡
-     *     @Autowired
-     *     private loadBalancer loadBalancer;
-     *     @Autowired
-     *     private DiscoveryClient discoveryClient;
+     *
+     * @Autowired private loadBalancer loadBalancer;
+     * @Autowired private DiscoveryClient discoveryClient;
      */
 
 
@@ -57,19 +56,27 @@ public class OrderController {
             return new CommonResult<>(444, "操作失败");
         }
     }
-/**
- * 自定义负载均衡
-    @GetMapping("/consumer/payment/lb")
-    public String getPaymentLB() {
 
-        List<ServiceInstance> instances = discoveryClient.getInstances("CLOUD-PAYMENT-SERVICE");
-        if (instances == null || instances.size() <= 0) {
-            return null;
-        }
+    /**
+     * 自定义负载均衡
+     *
+     * @GetMapping("/consumer/payment/lb") public String getPaymentLB() {
+     * <p>
+     * List<ServiceInstance> instances = discoveryClient.getInstances("CLOUD-PAYMENT-SERVICE");
+     * if (instances == null || instances.size() <= 0) {
+     * return null;
+     * }
+     * <p>
+     * ServiceInstance serviceInstance = loadBalancer.instances(instances);
+     * URI uri = serviceInstance.getUri();
+     * return restTemplate.getForObject("/payment/lb", String.class);
+     * }
+     */
 
-        ServiceInstance serviceInstance = loadBalancer.instances(instances);
-        URI uri = serviceInstance.getUri();
-        return restTemplate.getForObject("/payment/lb", String.class);
+    // ====================> zipkin+sleuth
+    @GetMapping("/consumer/payment/zipkin")
+    public String paymentZipkin() {
+        String result = restTemplate.getForObject("http://localhost:8001/" + "payment/zipkin/", String.class);
+        return result;
     }
- */
 }
